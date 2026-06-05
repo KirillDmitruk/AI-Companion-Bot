@@ -13,7 +13,6 @@ from services.ai_service import ask_ai
 load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
-print(f'TOKEN = {TOKEN}')
 
 if TOKEN is None:
     raise ValueError("BOT_TOKEN environment variable not found")
@@ -66,6 +65,9 @@ async def me(message: Message):
 @dp.message(F.text)
 async def message_echo(message: Message):
     response = await ask_ai(message.text)
+
+    if not response:
+        response = "Пустой ответ от AI"
 
     await message.answer(response)
 
