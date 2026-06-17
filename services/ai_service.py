@@ -16,7 +16,7 @@ async def ask_ai(text: str) -> str:
     full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {text}"
 
     response = client.models.generate_content(
-        model="gemini-3.5-flash",
+        model="gemini-2.5-flash",
         contents=full_prompt,
     )
 
