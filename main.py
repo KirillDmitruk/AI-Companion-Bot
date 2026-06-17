@@ -52,6 +52,10 @@ async def help_handler(message: Message):
 @dp.message(Command("me"))
 async def me(message: Message):
     user = message.from_user
+
+    if user is None:
+        return
+
     await message.answer(
         f"""
 Ваш ID: {user.id}
@@ -64,8 +68,10 @@ async def me(message: Message):
 
 @dp.message(F.text)
 async def message_echo(message: Message):
-    response = await ask_ai(message.text)
+    if message.text is None:
+        return
 
+    response = await ask_ai(message.text)
     if not response:
         response = "Пустой ответ от AI"
 

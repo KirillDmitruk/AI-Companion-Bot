@@ -12,7 +12,7 @@ with open("prompt/prompt.txt", "r", encoding="utf-8") as f:
     SYSTEM_PROMPT = f.read()
 
 
-async def ask_ai(text: str):
+async def ask_ai(text: str) -> str:
     full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {text}"
 
     response = client.models.generate_content(
@@ -21,6 +21,6 @@ async def ask_ai(text: str):
     )
 
     result = response.text
-    if not result:
+    if result is None:
         return "Я не смог сформировать ответ..."
     return result
