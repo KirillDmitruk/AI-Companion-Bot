@@ -13,14 +13,23 @@ with open("prompt/prompt.txt", "r", encoding="utf-8") as f:
 
 
 async def ask_ai(text: str) -> str:
-    full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {text}"
+    try:
+        full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {text}"
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=full_prompt,
-    )
+        response = client.models.generate_content(
+            model="gemini-3.5-flash",
+            contents=full_prompt,
+        )
 
-    result = response.text
-    if result is None:
-        return "Я не смог сформировать ответ..."
-    return result
+        result = response.text
+        if result is None:
+            return "Я не смог сформировать ответ..."
+        return result
+
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+        return (
+            "Сейчас AI временно недоступен 🤖\n"
+            "Попробуй ещё раз через минуту"
+        )
