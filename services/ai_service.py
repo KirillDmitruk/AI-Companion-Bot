@@ -8,7 +8,7 @@ load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=API_KEY)
 
-with open("prompt/prompt.txt", "r", encoding="utf-8") as f:
+with open("prompt/system.txt", "r", encoding="utf-8") as f:
     SYSTEM_PROMPT = f.read()
 
 
