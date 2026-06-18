@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from google import genai
 
+from services.memory_service import get_history
+
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -12,13 +14,43 @@ with open("prompt/system.txt", "r", encoding="utf-8") as f:
     SYSTEM_PROMPT = f.read()
 
 
-async def ask_ai(text: str) -> str:
-    try:
-        full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {text}"
+def build_contents(system_prompt: str, history: list[dict], user_text: str):
+    contents = []
 
+    # system prompt как первое сообщение
+    contents.append({
+        "role": "user",
+        "parts": [{"text": system_prompt}]
+    })
+
+    # история
+    for msg in history:
+        contents.append({
+            "role": msg["role"],
+            "parts": [{"text": msg["text"]}]
+        })
+
+    # текущее сообщение
+    contents.append({
+        "role": "user",
+        "parts": [{"text": user_text}]
+    })
+
+    return contents
+
+
+async def ask_ai(user_id: int, text: str) -> str:
+    try:
+        history = get_history(user_id)
+
+        contents = build_contents(
+            SYSTEM_PROMPT,
+            history,
+            text
+        )
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=full_prompt,
+            contents=contents,
         )
 
         result = response.text

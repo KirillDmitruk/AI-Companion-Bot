@@ -9,6 +9,7 @@ from aiogram.types import Message
 from dotenv import load_dotenv
 
 from services.ai_service import ask_ai
+from services.memory_service import save_message
 
 load_dotenv()
 
@@ -65,16 +66,23 @@ async def me(message: Message):
 """
     )
 
-
 @dp.message(F.text)
-async def message_echo(message: Message):
-    if message.text is None:
+async def message_handler(message: Message):
+    if not message.text:
         return
+    user_id = message.from_user.id
+    text = message.text
 
-    response = await ask_ai(message.text)
-    if not response:
-        response = "Пустой ответ от AI"
+    # 1. сохраняем user message
+    save_message(user_id, "user", text)
 
+    # 2. получаем AI ответ с контекстом
+    response = await ask_ai(user_id, text)
+
+    # 3. сохраняем ответ AI
+    save_message(user_id, "assistant", response)
+
+    # 4. отправляем пользователю
     await message.answer(response)
 
 
